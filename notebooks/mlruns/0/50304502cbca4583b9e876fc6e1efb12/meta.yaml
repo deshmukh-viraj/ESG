@@ -1,0 +1,14 @@
+artifact_uri: file:///c:/ESG/notebooks/mlruns/0/50304502cbca4583b9e876fc6e1efb12/artifacts
+end_time: null
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 50304502cbca4583b9e876fc6e1efb12
+run_name: Final Model HyperParameter
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1754910626480
+status: 1
+tags: []
+user_id: Admin
