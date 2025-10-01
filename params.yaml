@@ -1,0 +1,38 @@
+# params.yaml
+
+data_ingestion:
+  data_url: C:/ESG/data/processed_esg_dataset.csv 
+  s3_bucket: "my-esg-bucket"                 
+  aws_access_key: "YOUR_AWS_ACCESS_KEY"      
+  aws_secret_key: "YOUR_AWS_SECRET_KEY"      
+  s3_file_key: "datasets/processed_esg_dataset.csv"  
+  region_name: "ap-south-1"   
+        
+  test_size: 0.25
+  random_state: 42
+  drop_columns: ["Unnamed: 0"]   # columns to drop during ingestion
+  handle_missing: drop           # drop | mean | median | mode
+
+feature_engineering:
+  max_features: 50
+  correlation_threshold: 0.85    # threshold for dropping correlated features
+  scaling: standard               # standard | minmax | none
+  encoding: onehot                 # onehot | label | none
+
+modeling:
+  baseline_model: LinearRegression
+  advanced_models: ["RandomForest", "XGBoost", "LightGBM", "CatBoost"]
+  scoring_metric: r2
+  cv_folds: 5
+  random_state: 42
+
+mlflow:
+  tracking_uri: https://dagshub.com/virajdeshmukh080818/ESG.mlflow
+  experiment_name: ESG_Advanced_Models
+  dagshub_repo_owner: virajdeshmukh080818
+  dagshub_repo_name: ESG
+
+storage:
+  raw_data_dir: data/raw
+  processed_data_dir: data/processed
+  models_dir: models
