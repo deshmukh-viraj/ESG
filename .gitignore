@@ -91,3 +91,4 @@ atlas
 cred.txt
 notebooks/
 .env
+data/
