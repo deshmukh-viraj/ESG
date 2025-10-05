@@ -5,6 +5,7 @@ import yaml
 import logging
 from src.logger import configure_logger
 from src.connections.s3_connection import s3_operations
+from src.connections import s3_connection
 
 configure_logger()
 logger = logging.getLogger(__name__)
@@ -99,7 +100,10 @@ def main():
         random_state = params["data_ingestion"]["random_state"]
         
 
-        df = load_data(params)
+        #df = load_data(params)
+        s3 = s3_connection.s3_operations("bucket-name", "access_key", "secret_key")
+        df = s3.fetch_file_from_s3("esg.csv")
+        
         final_df = preprocess_data(df, params)
         train_data, test_data = train_test_split(final_df, test_size=test_size, random_state=random_state)
         save_data(train_data, test_data, params)
