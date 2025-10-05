@@ -99,7 +99,7 @@ def main():
         
 
         #df = load_data(params)
-        s3 = s3_connection.s3_operations("esg.csv", "AKIAVLMV72KMCAZ6UG73", "JIIMTFvoXqpwOSIBB974EKvlFLlzYvij3yaWUJr1")
+        s3 = s3_connection.s3_operations("esg.csv", "AKCAZ6UG73", "JIIMTFvozYvij3yaWUJr1")
         df = s3.fetch_file_from_s3("company_esg_financial_dataset.csv")
 
         final_df = preprocess_data(df, params)
