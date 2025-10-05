@@ -6,3 +6,4 @@ dagshub
 docker
 mlflow
 -e.
+dotenv
