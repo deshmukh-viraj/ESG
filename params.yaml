@@ -1,7 +1,7 @@
 # params.yaml
 
 data_ingestion:
-  data_url: C:/ESG/data/processed_esg_dataset.csv 
+  data_url: C:\ESG\data\raw\company_esg_financial_dataset.csv 
   s3_bucket: "my-esg-bucket"                 
   aws_access_key: "YOUR_AWS_ACCESS_KEY"      
   aws_secret_key: "YOUR_AWS_SECRET_KEY"      
@@ -34,5 +34,5 @@ mlflow:
 
 storage:
   raw_data_dir: data/raw
-  processed_data_dir: data/processed
+  processed_data_dir: data/interim
   models_dir: models

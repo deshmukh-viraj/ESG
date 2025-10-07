@@ -113,7 +113,7 @@ def main():
         random_state=42
         
 
-        df = load_data(file_path="C:\ESG\data\processed_esg_dataset.csv")
+        df = load_data(file_path="C:\ESG\data\\raw\company_esg_financial_dataset.csv")
         #s3 = s3_connection.s3_operations("esg.csv", "AKIAVLMV72KMCAZ6UG73", "JIIMTFvoXqpwOSIBB974EKvlFLlzYvij3yaWUJr1")
         #df = s3.fetch_file_from_s3("company_esg_financial_dataset.csv")
 
