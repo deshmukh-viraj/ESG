@@ -61,7 +61,7 @@ def load_data(file_path: str) -> pd.DataFrame:
         logging.error('Unexpected error occurred while loading the data: %s', e)
         raise
 
-def preprocess_data(df: pd.DataFrame, params: dict) -> pd.DataFrame:
+#def preprocess_data(df: pd.DataFrame, params: dict) -> pd.DataFrame:
     """Preprocess the data according to params.yaml setting"""
     try:
         drop_cols = params["data_ingestion"].get("drop_columns", [])

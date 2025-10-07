@@ -7,3 +7,4 @@ docker
 mlflow
 -e.
 dotenv
+scikit-learn
