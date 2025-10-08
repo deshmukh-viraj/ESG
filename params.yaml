@@ -13,11 +13,28 @@ data_ingestion:
   drop_columns: ["Unnamed: 0"]   # columns to drop during ingestion
   handle_missing: drop           # drop | mean | median | mode
 
+
+data_preprocessing:
+  output_dir: C:\ESG\data\interim
+  output_file_name: processed_esg_dataset.csv
+
+
 feature_engineering:
-  max_features: 50
-  correlation_threshold: 0.85    # threshold for dropping correlated features
-  scaling: standard               # standard | minmax | none
-  encoding: onehot                 # onehot | label | none
+  enabled: true
+  input_path:  C:\ESG\data\interim\processed_esg_dataset.csv 
+  output_dir:  src/features
+  output_file_name: featured_esg_dataset.csv
+
+  # toggles
+  financial_ratios: true
+  esg_pillars: true
+  temporal: true
+  lag_features: true
+  rolling_stats: true
+  rolling_window: 3
+
+  # hook for user functions (list any custom func names here)
+  custom_funcs: []               
 
 modeling:
   baseline_model: LinearRegression

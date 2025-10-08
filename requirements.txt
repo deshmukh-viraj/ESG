@@ -5,6 +5,6 @@ seaborn
 dagshub
 docker
 mlflow
--e.
+-e .
 dotenv
 scikit-learn
