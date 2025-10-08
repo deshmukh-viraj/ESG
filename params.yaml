@@ -36,12 +36,27 @@ feature_engineering:
   # hook for user functions (list any custom func names here)
   custom_funcs: []               
 
-modeling:
-  baseline_model: LinearRegression
-  advanced_models: ["RandomForest", "XGBoost", "LightGBM", "CatBoost"]
-  scoring_metric: r2
-  cv_folds: 5
-  random_state: 42
+model_building:
+  target: "ESG_Overall"
+  input_path: "src/features/featured_esg_dataset.csv"
+
+  split:
+    test_size: 0.2  
+    random_state: 42
+
+  optuna:
+    n_trials: 20
+    timeout: null  # can set e.g. 600 for 10 minutes
+
+  catboost:
+    random_seed: 42
+    verbose: 0
+
+  output:
+    model_dir: "C:\\ESG\\models"
+    model_name: "catboost_final_model.pkl"
+    metrics_name: "model_metrics.json"
+
 
 mlflow:
   tracking_uri: https://dagshub.com/virajdeshmukh080818/ESG.mlflow
