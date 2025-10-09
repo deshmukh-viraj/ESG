@@ -103,9 +103,8 @@ def save_artifacts(model, metrics, output_dir:str, model_name:str, metrics_name:
     joblib.dump(model, model_path)
     with open(metrics_path, "w") as f:
         json.dump(metrics, f, indent=4)
-    logging.info(f"Saved model tp {model_path} and metrics to {metrics_path}")
+    logging.info(f"Saved model to {model_path} and metrics to {metrics_path}")
     return model_path, metrics_path
-
 
 
 def main(params_path: str = "params.yaml"):
@@ -124,11 +123,19 @@ def main(params_path: str = "params.yaml"):
     metrics_name = cfg.get("output", {}).get("metrics_name", "final_model_metrics.json")
 
     X_train, y_train, X_test, y_test = load_data(file_path, target, test_size, random_seed)
+    
+    os.makedirs(output_dir, exist_ok=True)
+
+    train_path = os.path.join(output_dir, "train_split.csv")
+    test_path = os.path.join(output_dir, "test_split.csv")
+
+    X_train.assign(**{target: y_train}).to_csv(train_path, index=False)
+    X_test.assign(**{target: y_test}).to_csv(test_path, index=False)
+    logging.info(f"Train and Test splits saved: {train_path}, {test_path}")
+
     best_params = run_optuna(X_train, y_train, n_trials, timeout, random_seed)
     model, metrics = train_and_evaluate(best_params, X_train, y_train, X_test, y_test, random_seed)
     save_artifacts(model, metrics, output_dir, model_name, metrics_name)
-
-
 
 if __name__ == "__main__":
     main()
