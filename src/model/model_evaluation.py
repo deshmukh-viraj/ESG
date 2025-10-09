@@ -101,11 +101,13 @@ def main():
         model.save_model(os.path.join(model_dir, "catboost_model.cbm"))
         mlflow.log_artifact(os.path.join(model_dir, "catboost_model.cbm"))
         
+        #mlflow.sklearn.log_model(model, name="catboost_model")
+
         # --- Save experiment info for model registry ---
         experiment_info_path = os.path.join("C:\\ESG\\reports", "experiment_info.json")
         model_info = {
             "run_id": run.info.run_id,
-            "model_path": "catboost_model"   
+            "model_path": "catboost_model.cbm"   
         }
 
         os.makedirs(os.path.dirname(experiment_info_path), exist_ok=True)
