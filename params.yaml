@@ -58,6 +58,22 @@ model_building:
     metrics_name: "model_metrics.json"
 
 
+model_evaluation:
+  dagshub:
+    username: virajdeshmukh080818
+    #token: "${DAGSHUB_TOKEN}"
+    repo_name: ESG-Project
+
+  mlflow:
+    experiment_name: "esg-model-evaluation"
+
+  paths:
+    model_path: "C:/ESG/notebooks/data/esg_artifacts/catboost_final_model.joblib"
+    test_data: "C:/ESG/notebooks/data/esg_artifacts/test_processed.csv"
+    target_col: "ESG_Overall"
+    metrics_output: "C:/ESG/notebooks/data/esg_artifacts/final_model_metrics.json"
+
+
 mlflow:
   tracking_uri: https://dagshub.com/virajdeshmukh080818/ESG.mlflow
   experiment_name: ESG_Advanced_Models
