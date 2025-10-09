@@ -96,8 +96,13 @@ def main():
     with mlflow.start_run():
         mlflow.log_metrics(metrics)
         mlflow.log_param("model_path", model_path)
-        mlflow.sklearn.log_model(model, "catboost_model")
+        import tempfile
+        model_dir = tempfile.mkdtemp()
+        model.save_model(os.path.join(model_dir, "catboost_model.cbm"))
+        mlflow.log_artifact(os.path.join(model_dir, "catboost_model.cbm"))
 
+        
+        
         metrics_path = params["paths"]["metrics_output"]
         os.makedirs(os.path.dirname(metrics_path), exist_ok=True)
         with open(metrics_path, "w") as f:
