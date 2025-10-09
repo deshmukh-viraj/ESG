@@ -93,9 +93,27 @@ def main():
     metrics = evaluate_model(model, X_test, y_test)
 
     #log metrics
-    with mlflow.start_run():
+    with mlflow.start_run() as run:
         mlflow.log_metrics(metrics)
         mlflow.log_param("model_path", model_path)
+        import tempfile
+        model_dir = tempfile.mkdtemp()
+        model.save_model(os.path.join(model_dir, "catboost_model.cbm"))
+        mlflow.log_artifact(os.path.join(model_dir, "catboost_model.cbm"))
+        
+        # --- Save experiment info for model registry ---
+        experiment_info_path = os.path.join("C:\\ESG\\reports", "experiment_info.json")
+        model_info = {
+            "run_id": run.info.run_id,
+            "model_path": "catboost_model"   
+        }
+
+        os.makedirs(os.path.dirname(experiment_info_path), exist_ok=True)
+        with open(experiment_info_path, "w") as f:
+            json.dump(model_info, f, indent=4)
+
+        logging.info(f"Model experiment info saved to {experiment_info_path}")
+
         
         
         metrics_path = params["paths"]["metrics_output"]
