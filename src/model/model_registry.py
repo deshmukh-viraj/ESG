@@ -44,6 +44,10 @@ def setup_dagshub(params: dict):
     mlflow.set_tracking_uri(tracking_uri)
     logging.info(f"MLflow tracking URI set to: {tracking_uri}")
 
+    #Separate registry URI (to avoid Dagshub unsupported endpoint errors)
+    registry_uri = "sqlite:///mlflow.db"
+    mlflow.set_registry_uri(registry_uri)
+    logging.info(f"Mlflow registry URI set to: {registry_uri}")
 
 def load_model_info(file_path: str) -> dict:
     """Load run_id and model path from the experiment info JSON."""
@@ -68,25 +72,37 @@ def register_model(model_name: str, model_info: dict):
         model_uri = f"runs:/{model_info['run_id']}/{model_info['model_path']}"
         logging.info(f"Registering model from URI: {model_uri}")
         
+        #mlflow client for local registry
+        client = MlflowClient(registry_uri="sqlite:///mlflow.db")
+        
         # Register the model
-        model_version = mlflow.register_model(model_uri, model_name)
+        mlflow.set_registry_uri("sqlite:///mlflow.db")
+        model_version = client.create_model_version(
+            name=model_name,
+            source=model_uri,
+            run_id=model_info['run_id']
+        )
         logging.info(f"Model registered successfully. Version: {model_version.version}")
 
         # Try to transition stage
         logging.info("Attempting to transition model to Staging...")
-        client = MlflowClient()
-        client.transition_model_version_stage(
+        
+        client.set_registered_model_alias(
             name=model_name,
             version=model_version.version,
-            stage='Staging'
+            alias='Staging'
         )
         logging.info(f"Model '{model_name}' transitioned to 'Staging' | version: {model_version.version}")
     
     except Exception as e:
-        logging.error("Model Registration Failed: %s", e)
-        import traceback
-        logging.error(traceback.format_exc())
-        raise
+        error_msf = str(e)
+        if "unsupported endpoint" in error_msf or "INTERNAL ERROR" in error_msf:
+            logging.warning("Dagshub does ot support model registry API. Model logged, but not registered.")
+        else:
+            logging.error("Model Registration Failed: %s", e)
+            import traceback
+            logging.error(traceback.format_exc())
+            raise
 
 
 def main():
@@ -97,7 +113,7 @@ def main():
         model_info_path = "C:\\ESG\\reports\\experiment_info.json"
         model_info = load_model_info(model_info_path)
 
-        model_name = "esg-catboost-model"
+        model_name = "my-esg-catboost-model"
         register_model(model_name, model_info)
 
         logging.info("Model registration successful")
