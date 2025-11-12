@@ -89,6 +89,5 @@ target/
 .mypy_cache/
 atlas
 cred.txt
-notebooks/
 .env
 data/
