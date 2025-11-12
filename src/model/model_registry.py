@@ -44,10 +44,11 @@ def setup_dagshub(params: dict):
     mlflow.set_tracking_uri(tracking_uri)
     logging.info(f"MLflow tracking URI set to: {tracking_uri}")
 
-    #Separate registry URI (to avoid Dagshub unsupported endpoint errors)
+    #Local registry URI (to avoid Dagshub unsupported endpoint errors)
     registry_uri = "sqlite:///mlflow.db"
     mlflow.set_registry_uri(registry_uri)
     logging.info(f"Mlflow registry URI set to: {registry_uri}")
+    
 
 def load_model_info(file_path: str) -> dict:
     """Load run_id and model path from the experiment info JSON."""
