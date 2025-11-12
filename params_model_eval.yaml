@@ -1,7 +1,6 @@
 dagshub:
   username: virajdeshmukh080818
-  token: bee20b3e814772ed0e7eeb1aad02ae4360f54aaf
-  repo_name: ESG-Project
+  repo_name: ESG
 
 mlflow:
   experiment_name: esg-model-evaluation

@@ -67,8 +67,12 @@ def main():
     """Main evaluation pipeline with MLflow and Dagshub tracking"""
     params = load_params()
 
+    dagshub_token = os.getenv("DAGSHUB_TOKEN")
+    if not dagshub_token:
+        raise EnvironmentError("DAGSHUB_TOKEN environment variable is not set")
+    
     os.environ["MLFLOW_TRACKING_USERNAME"] = params["dagshub"]["username"]
-    os.environ["MLFLOW_TRACKING_PASSWORD"] = params["dagshub"]["token"]
+    os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
     dagshub.init(
         repo_owner=params["dagshub"]["username"],
@@ -94,8 +98,19 @@ def main():
 
     #log metrics
     with mlflow.start_run() as run:
+
         mlflow.log_metrics(metrics)
         mlflow.log_param("model_path", model_path)
+
+        try:
+            model_params = model.get_params()
+            for param_name, param_value in model_params.items():
+                mlflow.log_param(param_name, param_value)
+            logging.info("Model hyperparameters logges to MLflow")
+        except Exception as e:
+            logging.warning(f"could not log model hyperparameters: {e}")
+
+            
         import tempfile
         model_dir = tempfile.mkdtemp()
         model.save_model(os.path.join(model_dir, "catboost_model.cbm"))

@@ -23,8 +23,10 @@ except Exception as e:
     logging.error("Catbost is required for this script. Install using pip install catboost")
     raise
 
+
 def load_params(params_path: str="params.yaml") -> Dict[str, Any]:
     """load parameters from yaml, return empty dict on failure"""
+    
     try:
         import yaml
         if os.path.exists(params_path):
@@ -41,6 +43,7 @@ def load_params(params_path: str="params.yaml") -> Dict[str, Any]:
 
 def load_data(file_path: str, target: str, test_size: float, random_state: int=42):
     """load single dataset and split into train/test"""
+
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Dataset not found at{file_path}")
     df = pd.read_csv(file_path)
@@ -52,8 +55,10 @@ def load_data(file_path: str, target: str, test_size: float, random_state: int=4
     logging.info(f"Data loaded and split: Train={X_train.shape}, Test={X_test.shape}")
     return X_train, y_train, X_test, y_test
 
+
 def create_objective(X,y, random_seed: int=42):
     """objective for optuna study"""
+    
     def objective(trial):
         params ={
             "iterations": trial.suggest_int("iterations", 200, 1200),
@@ -78,13 +83,16 @@ def create_objective(X,y, random_seed: int=42):
 
 def run_optuna(X_train, y_train, n_trials: int, timeout: Optional[int], random_seed: int):
     """run optuna tuning"""
+    
     study = optuna.create_study(direction="minimize", sampler=optuna.samplers.TPESampler(seed=random_seed))
     study.optimize(create_objective(X_train, y_train, random_seed), n_trials=n_trials, timeout=timeout, show_progress_bar=True)
     logging.info(f"Optuna completed. Best Value: {study.best_value}")
     return study.best_params
 
+
 def train_and_evaluate(best_params: Dict[str, Any], X_train, y_train, X_test, y_test, random_seed: int = 42):
     """train and evaluate catboost model"""
+    
     best_params.update({"random_seed": random_seed, "verbose": 0})
     model = CatBoostRegressor(**best_params)
     model.fit(X_train, y_train)
@@ -95,8 +103,10 @@ def train_and_evaluate(best_params: Dict[str, Any], X_train, y_train, X_test, y_
     logging.info(f"Evaluation Complete. RMSE={rmse:.4f}, R2={r2:.4f}")
     return model, metrics
 
+
 def save_artifacts(model, metrics, output_dir:str, model_name:str, metrics_name: str):
     """save model and metrics"""
+    
     os.makedirs(output_dir, exist_ok=True)
     model_path = os.path.join(output_dir, model_name)
     metrics_path = os.path.join(output_dir, metrics_name)
@@ -136,6 +146,8 @@ def main(params_path: str = "params.yaml"):
     best_params = run_optuna(X_train, y_train, n_trials, timeout, random_seed)
     model, metrics = train_and_evaluate(best_params, X_train, y_train, X_test, y_test, random_seed)
     save_artifacts(model, metrics, output_dir, model_name, metrics_name)
+
+
 
 if __name__ == "__main__":
     main()

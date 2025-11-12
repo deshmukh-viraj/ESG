@@ -38,7 +38,7 @@ feature_engineering:
 
 model_building:
   target: "ESG_Overall"
-  input_path: "src/features/featured_esg_dataset.csv"
+  input_path: "C:\\ESG\\src\\features\\featured_esg_dataset.csv"
 
   split:
     test_size: 0.2  
@@ -57,15 +57,12 @@ model_building:
     model_name: "catboost_final_model.pkl"
     metrics_name: "model_metrics.json"
 
+  dagshub:
+    username: virajdeshmukh080818
+    repo_name: ESG
 
-# model_evaluation:
-#   dagshub:
-#     username: virajdeshmukh080818
-#     #token: "${DAGSHUB_TOKEN}"
-#     repo_name: ESG-Project
-
-#   mlflow:
-#     experiment_name: "esg-model-evaluation"
+  mlflow:
+    experiment_name: default
 
 #   paths:
 #     model_path: "C:\\ESG\\models\\catboost_final_model.pkl"
@@ -74,13 +71,13 @@ model_building:
 #     metrics_output: "C:/ESG/notebooks/data/esg_artifacts/final_model_metrics.json"
 
 
-mlflow:
-  tracking_uri: https://dagshub.com/virajdeshmukh080818/ESG.mlflow
-  experiment_name: ESG_Advanced_Models
-  dagshub_repo_owner: virajdeshmukh080818
-  dagshub_repo_name: ESG
+# mlflow:
+#   tracking_uri: https://dagshub.com/virajdeshmukh080818/ESG.mlflow
+#   experiment_name: ESG_Advanced_Models
+#   dagshub_repo_owner: virajdeshmukh080818
+#   dagshub_repo_name: ESG
 
-storage:
-  raw_data_dir: data/raw
-  processed_data_dir: data/interim
-  models_dir: models
+# storage:
+#   raw_data_dir: data/raw
+#   processed_data_dir: data/interim
+#   models_dir: models
