@@ -1,0 +1,94 @@
+schema: '2.0'
+stages:
+  data_ingestion:
+    cmd: python src/data/data_ingestion.py
+    deps:
+    - path: src/data/data_ingestion.py
+      hash: md5
+      md5: 25ba83dc1d5b48d4a3fc7760b387edb3
+      size: 5282
+    params:
+      params.yaml:
+        data_ingestion.test_size: 0.25
+  data_preprocessing:
+    cmd: python src/data/data_preprocessing.py
+    deps:
+    - path: data/raw
+      hash: md5
+      md5: 5c03562fd46f6fc7a85c431490ed64c5.dir
+      size: 1226405
+      nfiles: 1
+    - path: src/data/data_preprocessing.py
+      hash: md5
+      md5: d1c3c7953eb49e03c222da29dd764d91
+      size: 14844
+    outs:
+    - path: data/interim
+      hash: md5
+      md5: 754f7e74d0222ca8702b0d4661e46913.dir
+      size: 67831834
+      nfiles: 1
+  feature_engineering:
+    cmd: python src/features/feature_engineering.py
+    deps:
+    - path: data/interim
+      hash: md5
+      md5: 754f7e74d0222ca8702b0d4661e46913.dir
+      size: 67831834
+      nfiles: 1
+    - path: src/features/feature_engineering.py
+      hash: md5
+      md5: 53e36d174151102309e7d8dda1657521
+      size: 6601
+    outs:
+    - path: src/features/featured_esg_dataset.csv
+      hash: md5
+      md5: d30eb54949d595823c72380c0e5c3b92
+      size: 69475415
+  model_building:
+    cmd: python src/model/model_building.py
+    deps:
+    - path: src/features/featured_esg_dataset.csv
+      hash: md5
+      md5: d30eb54949d595823c72380c0e5c3b92
+      size: 69475415
+    - path: src/model/model_building.py
+      hash: md5
+      md5: 725bc4b43a64d84afdee552a5e41d85e
+      size: 6229
+    outs:
+    - path: models/catboost_final_model.pkl
+      hash: md5
+      md5: dd1831de55e9d24f583d98de1d845259
+      size: 5054851
+  model_evaluation:
+    cmd: python src/model/model_evaluation.py
+    deps:
+    - path: models/catboost_final_model.pkl
+      hash: md5
+      md5: dd1831de55e9d24f583d98de1d845259
+      size: 5054851
+    - path: src/model/model_evaluation.py
+      hash: md5
+      md5: bdbd2089973680ba32952fdb89115796
+      size: 4704
+    outs:
+    - path: reports/experiment_info.json
+      hash: md5
+      md5: cf4d1705087c08b02494420a89163c1f
+      size: 95
+    - path: reports/model_eval_metrics.json
+      hash: md5
+      md5: 0d4f11a41dc7f586fdbb3dc3a8e4e448
+      size: 66
+  model_registration:
+    cmd: python src/model/model_registry.py
+    deps:
+    - path: reports/experiment_info.json
+      hash: md5
+      md5: cf4d1705087c08b02494420a89163c1f
+      size: 95
+    - path: src/model/model_registry.py
+      hash: md5
+      md5: a73c6f3c2f960394dd510a2e3ea06746
+      size: 5760
