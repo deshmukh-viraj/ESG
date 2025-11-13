@@ -1,0 +1,49 @@
+{
+  "target": "ESG_Overall",
+  "features": [
+    "Industry",
+    "Region",
+    "Revenue",
+    "ProfitMargin",
+    "MarketCap",
+    "GrowthRate",
+    "ESG_Environmental",
+    "ESG_Social",
+    "ESG_Governance",
+    "CarbonEmissions",
+    "WaterUsage",
+    "EnergyConsumption"
+  ],
+  "num_cols": [
+    "Revenue",
+    "ProfitMargin",
+    "MarketCap",
+    "GrowthRate",
+    "ESG_Environmental",
+    "ESG_Social",
+    "ESG_Governance",
+    "CarbonEmissions",
+    "WaterUsage",
+    "EnergyConsumption"
+  ],
+  "cat_cols": [
+    "Industry",
+    "Region"
+  ],
+  "train_years": [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "test_years": [
+    2022,
+    2023,
+    2024,
+    2025
+  ],
+  "best_model": "LinearRegression"
+}

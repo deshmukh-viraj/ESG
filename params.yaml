@@ -24,7 +24,6 @@ feature_engineering:
   input_path:  C:\ESG\data\interim\processed_esg_dataset.csv 
   output_dir:  src/features
   output_file_name: featured_esg_dataset.csv
-
   # toggles
   financial_ratios: true
   esg_pillars: true
@@ -77,7 +76,7 @@ model_building:
 #   dagshub_repo_owner: virajdeshmukh080818
 #   dagshub_repo_name: ESG
 
-# storage:
-#   raw_data_dir: data/raw
-#   processed_data_dir: data/interim
-#   models_dir: models
+storage:
+  raw_data_dir: data/raw
+  processed_data_dir: data/interim
+  models_dir: models
