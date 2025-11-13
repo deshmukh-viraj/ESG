@@ -15,6 +15,7 @@ warnings.filterwarnings("ignore", category=UserWarning)
 
 def load_params(params_path: str = "params_model_eval.yaml") -> dict:
     """load params from yaml"""
+    
     import yaml
     try:
         with open(params_path, "r") as f:
@@ -26,8 +27,9 @@ def load_params(params_path: str = "params_model_eval.yaml") -> dict:
         raise
 
 
-def setup_dagshub(params: dict):
+def setup_dagshub(params: dict, run_id: str):
     """Initialize Dagshub MLflow tracking"""
+
     dags_param = params.get("dagshub", {})
     username = dags_param.get("username")
     repo_name = dags_param.get("repo_name")
@@ -42,16 +44,29 @@ def setup_dagshub(params: dict):
     
     tracking_uri = f'https://dagshub.com/{username}/{repo_name}.mlflow'
     mlflow.set_tracking_uri(tracking_uri)
+
+    client_remote = MlflowClient(tracking_uri=tracking_uri)
+    run_data = client_remote.get_run(run_id=run_id)
+    metrics = run_data.data.metrics
+    params_run = run_data.data.params
+
     logging.info(f"MLflow tracking URI set to: {tracking_uri}")
+    logging.info(f"Fetched {len(metrics)} metrics from Dagshub run {run_id}")
+    logging.info(f"Fetched {len(params_run)} parameters from Dagshub run {run_id}")
+
 
     #Local registry URI (to avoid Dagshub unsupported endpoint errors)
     registry_uri = "sqlite:///mlflow.db"
     mlflow.set_registry_uri(registry_uri)
     logging.info(f"Mlflow registry URI set to: {registry_uri}")
     
+    return metrics, params_run
+
+
 
 def load_model_info(file_path: str) -> dict:
     """Load run_id and model path from the experiment info JSON."""
+    
     try:
         with open(file_path, "r") as file:
             model_info = json.load(file)
@@ -67,8 +82,10 @@ def load_model_info(file_path: str) -> dict:
         raise
 
 
-def register_model(model_name: str, model_info: dict):
+
+def register_model(model_name: str, model_info: dict, metrics: dict, params_run: dict):
     """Register the model and transition it to 'Staging' in mlflow registry"""
+    
     try:
         model_uri = f"runs:/{model_info['run_id']}/{model_info['model_path']}"
         logging.info(f"Registering model from URI: {model_uri}")
@@ -78,13 +95,35 @@ def register_model(model_name: str, model_info: dict):
         
         # Register the model
         mlflow.set_registry_uri("sqlite:///mlflow.db")
+
         model_version = client.create_model_version(
             name=model_name,
             source=model_uri,
             run_id=model_info['run_id']
+            
         )
         logging.info(f"Model registered successfully. Version: {model_version.version}")
 
+        for metric_name, metric_value in metrics.items():
+            client.set_model_version_tag(
+                name=model_name,
+                version=model_version.version,
+                key=f"metric_{metric_name}",
+                value=str(metric_value)
+            )
+
+            logging.info(f"Tagged metric: {metric_name} = {metric_value}")
+
+        for param_name, param_value in params_run.items():
+            client.set_model_version_tag(
+                name=model_name,
+                version=model_version.version,
+                key=f"param_{param_name}",
+                value=str(param_value)
+            )
+            logging.info(f"Tagged parameter: {param_name} = {param_value}")
+        
+        
         # Try to transition stage
         logging.info("Attempting to transition model to Staging...")
         
@@ -98,7 +137,7 @@ def register_model(model_name: str, model_info: dict):
     except Exception as e:
         error_msf = str(e)
         if "unsupported endpoint" in error_msf or "INTERNAL ERROR" in error_msf:
-            logging.warning("Dagshub does ot support model registry API. Model logged, but not registered.")
+            logging.warning("Dagshub does not support model registry API. Model logged, but not registered.")
         else:
             logging.error("Model Registration Failed: %s", e)
             import traceback
@@ -109,13 +148,14 @@ def register_model(model_name: str, model_info: dict):
 def main():
     try:
         params = load_params("params_model_eval.yaml")
-        setup_dagshub(params)
-
+        
         model_info_path = "C:\\ESG\\reports\\experiment_info.json"
         model_info = load_model_info(model_info_path)
 
+        metrics, params_run = setup_dagshub(params, model_info["run_id"])
         model_name = "my-esg-catboost-model"
-        register_model(model_name, model_info)
+
+        register_model(model_name, model_info, metrics, params_run)
 
         logging.info("Model registration successful")
     
