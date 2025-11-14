@@ -4,10 +4,14 @@ from sklearn.model_selection import train_test_split
 import yaml
 import logging
 from src.logger import logging
-#from src.connections.s3_connection import s3_operations
-#from src.connections import s3_connection
+from src.connections.s3_connection import s3_operations
+from src.connections import s3_connection
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
-#logger = logging.getLogger(__name__)
+
+logger = logging.getLogger(__name__)
 
 def load_params(params_path: str) -> dict:
     """Load parameters from a ymal file"""
@@ -20,7 +24,7 @@ def load_params(params_path: str) -> dict:
         logging.error(f"Failed to load parameters from {params_path}: {e}")
         raise
 
-#def load_data_S3(params: dict) -> pd.DataFrame:
+def load_data_S3(params: dict) -> pd.DataFrame:
     """Load data from a S3"""
     try:
         if all(k in params["data_ingestion"] for k in ("s3_bucket", "aws_access_key", "aws_secret_key", "s3_file_key")):
@@ -48,7 +52,7 @@ def load_params(params_path: str) -> dict:
         logging.error(f"Failed to laod data: {e}")
         raise
 
-def load_data(file_path: str) -> pd.DataFrame:
+# def load_data(file_path: str) -> pd.DataFrame:
     """Load data from a CSV file."""
     try:
         df = pd.read_csv(file_path)
@@ -61,7 +65,7 @@ def load_data(file_path: str) -> pd.DataFrame:
         logging.error('Unexpected error occurred while loading the data: %s', e)
         raise
 
-#def preprocess_data(df: pd.DataFrame, params: dict) -> pd.DataFrame:
+def preprocess_data(df: pd.DataFrame, params: dict) -> pd.DataFrame:
     """Preprocess the data according to params.yaml setting"""
     try:
         drop_cols = params["data_ingestion"].get("drop_columns", [])
@@ -106,21 +110,24 @@ def save_data(train_data: pd.DataFrame, test_data: pd.DataFrame, params: dict) -
 
 def main():
     try:
-        #params = load_params('params.yaml')
-        #test_size = params["data_ingestion"]["test_size"]
-        #random_state = params["data_ingestion"]["random_state"]
-        test_size=0.24
-        random_state=42
-        
+        params = load_params('params.yaml')
+        test_size = params["data_ingestion"]["test_size"]
+        random_state = params["data_ingestion"]["random_state"]
+        # test_size=0.24
+        # random_state=42
+        BUCKET_NAME = "esg.csv"
+        AWS_ACCESS_KEY = os.getenv("aws_access_key")
+        AWS_SECRET_KEY = os.getenv("aws_secret_key")
+        # FILE_KEY = "company_esg_financial_dataset.csv"
 
-        df = load_data(file_path="C:\ESG\data\\raw\company_esg_financial_dataset.csv")
-        #s3 = s3_connection.s3_operations("esg.csv", "AKIAVLMV72KMCAZ6UG73", "JIIMTFvoXqpwOSIBB974EKvlFLlzYvij3yaWUJr1")
-        #df = s3.fetch_file_from_s3("company_esg_financial_dataset.csv")
+        # df = load_data(file_path="C:\ESG\data\\raw\company_esg_financial_dataset.csv")
+        s3 = s3_connection.s3_operations(BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY)
+        df = s3.fetch_file_from_s3("company_esg_financial_dataset.csv")
 
-        #final_df = preprocess_data(df, params)
-        final_df = df
+        final_df = preprocess_data(df, params)
+        # final_df = df
         train_data, test_data = train_test_split(final_df, test_size=test_size, random_state=random_state)
-        #save_data(train_data, test_data, params)
+        save_data(train_data, test_data, params)
     
     except Exception as e:
         logging.error(f"Data ingestion process failed: {e}")

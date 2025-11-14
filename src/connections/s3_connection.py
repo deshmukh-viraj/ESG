@@ -4,10 +4,16 @@ import logging
 from io import StringIO
 from src.logger import logging
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
 class s3_operations:
     def __init__(self, bucket_name:str, aws_access_key: str, aws_secret_key: str, region_name: str ="us-east-1"):
         """
         Initialize the s3_operations class with AWS credentials"""
+        
         self.bucket_name = bucket_name
         try:
             self.s3_client = boto3.client(
