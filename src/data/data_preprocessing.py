@@ -373,7 +373,7 @@ def main(params_path: str = "params.yaml") -> None:
    
     try:
         params = load_params(params_path)
-        input_path = params.get("data_preprocessing", {}).get("input_path", params.get("data_ingestion", {}).get("local_path", "C:\ESG\data\\raw\company_esg_financial_dataset.csv"))
+        input_path = params.get("data_preprocessing", {}).get("input_path", params.get("data_ingestion", {}).get("local_path", "data/raw/company_esg_financial_dataset.csv"))
         output_dir = params.get("data_preprocessing", {}).get("output_dir", params.get("storage", {}).get("processed_data_dir", "data/processed"))
         file_name = params.get("data_preprocessing", {}).get("output_file_name", "processed_esg_dataset.csv")
 
