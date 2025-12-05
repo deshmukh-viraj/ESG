@@ -17,7 +17,7 @@ REPO_NAME = "ESG"
 MLFLOW_TRACKING_URI = f"sqlite:///{PROJECT_ROOT.joinpath('mlflow.db').as_posix()}"
 MLFLOW_ARTIFACT_URI = f"file:///{PROJECT_ROOT.joinpath('artifacts').as_posix()}"
 MODEL_NAME = "my-esg-catboost-model"
-MODEL_VERSION = "1"
+MODEL_VERSION = "5"
 
 TRAIN_FEAT_ORDER = [
     'CompanyID', 'CompanyName', 'Industry', 'Region', 'Year',

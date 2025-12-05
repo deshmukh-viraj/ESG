@@ -1,0 +1,68 @@
+{
+  "best_model": "CatBoost",
+  "results": [
+    {
+      "model": "CatBoost",
+      "rmse": 0.24204407912735687,
+      "mae": 0.18438788179032548,
+      "r2": 0.9997635831512863
+    },
+    {
+      "model": "LightGBM",
+      "rmse": 0.6849519689055388,
+      "mae": 0.5230252559019778,
+      "r2": 0.998106742289839
+    },
+    {
+      "model": "XGBoost",
+      "rmse": 0.8442009698234478,
+      "mae": 0.6362299253463746,
+      "r2": 0.997124050930439
+    }
+  ],
+  "features": [
+    "Industry",
+    "Region",
+    "Revenue",
+    "ProfitMargin",
+    "MarketCap",
+    "GrowthRate",
+    "ESG_Environmental",
+    "ESG_Social",
+    "ESG_Governance",
+    "CarbonEmissions",
+    "WaterUsage",
+    "EnergyConsumption"
+  ],
+  "num_cols": [
+    "Revenue",
+    "ProfitMargin",
+    "MarketCap",
+    "GrowthRate",
+    "ESG_Environmental",
+    "ESG_Social",
+    "ESG_Governance",
+    "CarbonEmissions",
+    "WaterUsage",
+    "EnergyConsumption"
+  ],
+  "cat_cols": [
+    "Industry",
+    "Region"
+  ],
+  "train_years": [
+    2015,
+    2016,
+    2017,
+    2018,
+    2019,
+    2020,
+    2021
+  ],
+  "test_years": [
+    2022,
+    2023,
+    2024,
+    2025
+  ]
+}

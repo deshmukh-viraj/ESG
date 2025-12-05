@@ -17,6 +17,7 @@ except ImportError:
 
 def load_params(params_path: str ="params_model_eval.yaml") -> dict:
     """load parameters from the yaml file"""
+    
     try:
         with open(params_path, "r") as f:
             params = yaml.safe_load(f)
@@ -29,6 +30,7 @@ def load_params(params_path: str ="params_model_eval.yaml") -> dict:
 
 def load_model(model_path: str):
     """load train catboost model"""
+    
     try:
         model = joblib.load(model_path)
         logging.info(f"Model loaded from {model_path}")
@@ -40,6 +42,7 @@ def load_model(model_path: str):
 
 def load_data(test_path: str) -> pd.DataFrame:
     """load test dataset"""
+    
     try:
         df = pd.read_csv(test_path)
         logging.info(f"Test data loaded from {test_path}, shape={df.shape}")
@@ -51,6 +54,7 @@ def load_data(test_path: str) -> pd.DataFrame:
 
 def evaluate_model(model, X_test, y_test) -> dict:
     """evalute model performance"""
+    
     try:
         y_pred = model.predict(X_test)
         rmse = np.sqrt(mean_absolute_error(y_test, y_pred))
@@ -64,7 +68,8 @@ def evaluate_model(model, X_test, y_test) -> dict:
 
 
 def main():
-    """Main evaluation pipeline with MLflow and Dagshub tracking"""
+    """main evaluation pipeline with MLflow and Dagshub tracking"""
+    
     params = load_params()
 
     dagshub_token = os.getenv("DAGSHUB_TOKEN")

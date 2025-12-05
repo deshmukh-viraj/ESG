@@ -118,7 +118,7 @@ def main():
         BUCKET_NAME = "esg.csv"
         AWS_ACCESS_KEY = os.getenv("aws_access_key")
         AWS_SECRET_KEY = os.getenv("aws_secret_key")
-        # FILE_KEY = "company_esg_financial_dataset.csv"
+        
 
         # df = load_data(file_path="C:\ESG\data\\raw\company_esg_financial_dataset.csv")
         s3 = s3_connection.s3_operations(BUCKET_NAME, AWS_ACCESS_KEY, AWS_SECRET_KEY)

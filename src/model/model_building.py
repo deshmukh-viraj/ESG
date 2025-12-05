@@ -52,8 +52,9 @@ def load_data(file_path: str, target: str, test_size: float, random_state: int=4
     X = df.drop(columns=[target])
     y = df[target]
     X_train, X_test, y_train, y_test = train_test_split(X,y, test_size=test_size, random_state=random_state)
-    logging.info(f"Data loaded and split: Train={X_train.shape}, Test={X_test.shape}")
+    logging.info(f"Data loaded and splits: Train={X_train.shape}, Test={X_test.shape}")
     return X_train, y_train, X_test, y_test
+
 
 def get_cat_features(X: pd.DataFrame):
     """retunr list of categorical columns"""

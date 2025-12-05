@@ -20,7 +20,8 @@ except Exception:
 
 
 def load_params(params_path: str="params.yaml") -> Dict[str, Any]:
-    """Load params from the yaml file, returns empty dict on failure"""
+    """load params from the yaml file, returns empty dict on failure"""
+    
     try:
         if os.path.exists(params_path):
             with open(params_path, "r") as f:
@@ -47,8 +48,8 @@ def read_data(file_path: str) -> pd.DataFrame:
 
 def identify_column_types(df: pd.DataFrame, params: Dict[str,Any]) -> Dict[str,List[str]]:
     """
-    Identify numerical, categorical and datetime columns.
-    Allows overriding via params (e.g., params['data_preprocessing']['date_columns']).
+    identify numerical, categorical and datetime columns.
+    allows overriding via params (e.g., params['data_preprocessing']['date_columns']).
     """
     num_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     cat_cols = df.select_dtypes(include=["object","bool",'category']).columns.tolist()
@@ -67,7 +68,8 @@ def identify_column_types(df: pd.DataFrame, params: Dict[str,Any]) -> Dict[str,L
 
 
 def remove_duplicates(df: pd.DataFrame) -> pd.DataFrame:
-    """Drop duplicate rows and lof how many were removed"""
+    """drop duplicate rows and lof how many were removed"""
+
     try:
         before = len(df)
         df = df.drop_duplicates().reset_index(drop=True)

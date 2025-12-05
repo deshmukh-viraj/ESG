@@ -97,8 +97,8 @@ def windows_path_to_uri(win_path: str) -> str:
 
 def register_model(model_name: str, model_info: dict, metrics: dict, params_run: dict):
     """
-    Download model from Dagshub and re-logs it locally.
-    Register the model by downloading artifacts from Dagshub and storing locally
+    download model from Dagshub and re-logs it locally.
+    register the model by downloading artifacts from Dagshub and storing locally
     """
     try:
 

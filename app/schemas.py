@@ -13,7 +13,7 @@ class PredictionRequest(BaseModel):
     ESG_OVERALL_PREV: float = Field(..., description="Previous year's ESG overall score")
 
 class PredictionResponse(BaseModel):
-    prediction: float
+    ESG_Score: float
 
 class BatchPredictionRespinse(BaseModel):
     predictions: List[float]
