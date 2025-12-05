@@ -26,7 +26,12 @@ jobs:
       - name: install dependencies
         run: |
           pip install -r requirements.txt
+      
+      - name: install DVC
+        run: |
+          pip install "dvc[all]"
 
+          
       - name: run pipeline
         env:
           TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
