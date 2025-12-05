@@ -113,16 +113,18 @@ def main():
             
         import tempfile
         model_dir = tempfile.mkdtemp()
-        model.save_model(os.path.join(model_dir, "catboost_model.cbm"))
-        mlflow.log_artifact(os.path.join(model_dir, "catboost_model.cbm"))
-        
-        #mlflow.sklearn.log_model(model, name="catboost_model")
+        with tempfile.TemporaryDirectory() as model_dir:
+            save_path = os.path.join(model_dir, "catboost_model.cbm")
+            model.save_model(save_path)
+            mlflow.log_artifact(save_path, artifact_path="model")
+            logging.info(f"Model artifact logged to MLflow from {save_path}")
 
+            
         # --- Save experiment info for model registry ---
         experiment_info_path = os.path.join("C:\\ESG\\reports", "experiment_info.json")
         model_info = {
             "run_id": run.info.run_id,
-            "model_path": "catboost_model.cbm"   
+            "model_path": "model/catboost_model.cbm"   
         }
 
         os.makedirs(os.path.dirname(experiment_info_path), exist_ok=True)

@@ -8,3 +8,4 @@ mlflow
 -e .
 dotenv
 scikit-learn
+mlflow[extras]

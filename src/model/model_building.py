@@ -55,10 +55,16 @@ def load_data(file_path: str, target: str, test_size: float, random_state: int=4
     logging.info(f"Data loaded and split: Train={X_train.shape}, Test={X_test.shape}")
     return X_train, y_train, X_test, y_test
 
+def get_cat_features(X: pd.DataFrame):
+    """retunr list of categorical columns"""
+    cat_cols = X.select_dtypes(include=["object", "category", "bool"]).columns
+    return [X.columns.get_loc(c) for c in cat_cols]
+
 
 def create_objective(X,y, random_seed: int=42):
     """objective for optuna study"""
     
+    cat_features = get_cat_features(X)
     def objective(trial):
         params ={
             "iterations": trial.suggest_int("iterations", 200, 1200),
@@ -74,7 +80,7 @@ def create_objective(X,y, random_seed: int=42):
             "verbose": 0,
             "random_seed": random_seed      
         }  
-        model = CatBoostRegressor(**params)
+        model = CatBoostRegressor(**params, cat_features=cat_features)
         cv = KFold(n_splits=5, shuffle=True, random_state=random_seed)
         scores = cross_val_score(model, X,y, cv=cv, scoring="neg_root_mean_squared_error")
         return -scores.mean()
@@ -93,9 +99,10 @@ def run_optuna(X_train, y_train, n_trials: int, timeout: Optional[int], random_s
 def train_and_evaluate(best_params: Dict[str, Any], X_train, y_train, X_test, y_test, random_seed: int = 42):
     """train and evaluate catboost model"""
     
+    cat_features = get_cat_features(X_train)
     best_params.update({"random_seed": random_seed, "verbose": 0})
     model = CatBoostRegressor(**best_params)
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train, cat_features=cat_features)
     preds = model.predict(X_test)
     rmse = float(np.sqrt(mean_absolute_error(y_test, preds)))
     r2 = float(r2_score(y_test, preds))

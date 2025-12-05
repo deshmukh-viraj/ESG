@@ -2,6 +2,9 @@ import os
 import json
 import mlflow
 from mlflow.tracking import MlflowClient
+from pathlib import Path
+from mlflow.artifacts import download_artifacts
+
 
 try:
     from src.logger import logging
@@ -55,10 +58,10 @@ def setup_dagshub(params: dict, run_id: str):
     logging.info(f"Fetched {len(params_run)} parameters from Dagshub run {run_id}")
 
 
-    #Local registry URI (to avoid Dagshub unsupported endpoint errors)
-    registry_uri = "sqlite:///mlflow.db"
-    mlflow.set_registry_uri(registry_uri)
-    logging.info(f"Mlflow registry URI set to: {registry_uri}")
+    # Local registry URI (to avoid Dagshub unsupported endpoint errors)
+    # registry_uri = "sqlite:///C:/ESG/mlflow.db"
+    # mlflow.set_registry_uri(registry_uri)
+    # logging.info(f"Mlflow registry URI set to: {registry_uri}")
     
     return metrics, params_run
 
@@ -80,26 +83,77 @@ def load_model_info(file_path: str) -> dict:
     except Exception as e:
         logging.error("Failed to load model info: %s", e)
         raise
+    
+
+
+def windows_path_to_uri(win_path: str) -> str:
+    """convert windows path to proper file:// uri"""
+
+    abs_path =Path(win_path).absolute()
+    uri = abs_path.as_uri()
+    return uri
 
 
 
 def register_model(model_name: str, model_info: dict, metrics: dict, params_run: dict):
-    """Register the model and transition it to 'Staging' in mlflow registry"""
-    
+    """
+    Download model from Dagshub and re-logs it locally.
+    Register the model by downloading artifacts from Dagshub and storing locally
+    """
     try:
-        model_uri = f"runs:/{model_info['run_id']}/{model_info['model_path']}"
-        logging.info(f"Registering model from URI: {model_uri}")
+
+        dagshub_uri = f"runs:/{model_info['run_id']}/{model_info['model_path']}"
+        logging.info(f"Downloading model from Dagshub URI: {dagshub_uri}")
+
+        downloaded_path = download_artifacts(dagshub_uri)
+        logging.info(f"Model downloaded locally to: {downloaded_path}")
+
+        downloaded_path = Path(downloaded_path)
+        if not downloaded_path.exists():
+            raise FileNotFoundError("Downloaded model path does not exist")
         
-        #mlflow client for local registry
-        client = MlflowClient(registry_uri="sqlite:///mlflow.db")
+
+        base_dir = Path("C:/ESG")
+        base_dir.mkdir(parents=True, exist_ok=True)
+
+        mlruns_dir = base_dir / "mlruns"
+        mlruns_dir.mkdir(parents=True, exist_ok=True)
+
+        db_path = base_dir / "mlflow.db"                
+        local_uri = f"sqlite:///{db_path.as_posix()}"
+        artifact_root = f"file:///{mlruns_dir.as_posix()}"
+
+        logging.info(f"Local tracking URI: {local_uri}")
+        logging.info(f"Artifact root: {artifact_root}")
         
-        # Register the model
-        mlflow.set_registry_uri("sqlite:///mlflow.db")
+        mlflow.set_tracking_uri(local_uri)
+        mlflow.set_registry_uri(local_uri)
+        logging.info(f"Switched to local Mlfow: {local_uri}")
+
+        #create a new run to log the model locally
+        with mlflow.start_run(run_name=f"local_deployment_{model_name}") as run:
+            mlflow.log_artifact(downloaded_path, artifact_path="model")
+
+
+            mlflow.log_metrics(metrics)
+            logging.info(f"Logged {len(metrics)} metrics locally")
+
+            mlflow.log_params(params_run)
+            logging.info(f"logged {len(params_run)} parameters locally")
+
+            local_ru_id = run.info.run_id
+            logging.info(f"Model logged locally with run ID: {local_ru_id}")
+
+        client = MlflowClient(registry_uri=local_uri)
+        model_uri = f"runs:/{local_ru_id}/model"
+
+        logging.info(f"Registering model from Local URI: {model_uri}")
+
 
         model_version = client.create_model_version(
             name=model_name,
             source=model_uri,
-            run_id=model_info['run_id']
+            run_id=local_ru_id
             
         )
         logging.info(f"Model registered successfully. Version: {model_version.version}")
@@ -130,10 +184,12 @@ def register_model(model_name: str, model_info: dict, metrics: dict, params_run:
         client.set_registered_model_alias(
             name=model_name,
             version=model_version.version,
-            alias='Staging'
+            alias='staging'
         )
         logging.info(f"Model '{model_name}' transitioned to 'Staging' | version: {model_version.version}")
+        return model_version.version
     
+
     except Exception as e:
         error_msf = str(e)
         if "unsupported endpoint" in error_msf or "INTERNAL ERROR" in error_msf:
@@ -155,9 +211,12 @@ def main():
         metrics, params_run = setup_dagshub(params, model_info["run_id"])
         model_name = "my-esg-catboost-model"
 
-        register_model(model_name, model_info, metrics, params_run)
+        version = register_model(model_name, model_info, metrics, params_run)
 
-        logging.info("Model registration successful")
+        logging.info(f"Model registration successful. version: {version}")
+        logging.info(f"Model artifacts are now stored locally in C:/ESG/mlflow.db")
+        logging.info(f"now load the model using version '{version}'")
+        logging.info(f"Update your settings.py: MODEL_VERSION = '{version}'")
     
     except Exception as e:
         logging.error("Model registration failed: %s", e)

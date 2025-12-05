@@ -212,15 +212,22 @@ def encode_categoricals(
             logging.info("No categorical columns to encode.")
             return df
 
-        if strategy == "onehot":
-            logging.info("Applying one-hot encoding to categorical columns: %s", cat_cols)
-            df = pd.get_dummies(df, columns=cat_cols, drop_first=drop_first)
-            return df
+        # if strategy == "onehot":
+        #     logging.info("Applying one-hot encoding to categorical columns: %s", cat_cols)
+        #     df = pd.get_dummies(df, columns=cat_cols, drop_first=drop_first)
+        #     return df
 
         if strategy == "ordinal":
             logging.info("Applying ordinal encoding (factorize) to categorical columns: %s", cat_cols)
             for col in cat_cols:
                 df[col], _ = pd.factorize(df[col], sort=True)
+            return df
+        
+        if strategy == "frequency":
+            logging.info("Applying frequency encoding to categorical columns: %s", cat_cols)
+            for col in cat_cols:
+                freq = df[col].value_counts()
+                df[col] = df[col].map(freq)
             return df
 
         logging.warning("Unknown encoding strategy '%s'. No encoding applied.", strategy)
@@ -330,7 +337,7 @@ def preprocess_dataframe(df: pd.DataFrame, params: Dict[str, Any]) -> pd.DataFra
         df = feature_engineering(df, params)
 
         # encode categorical variables
-        encoding_strategy = params.get("data_preprocessing", {}).get("encoding", "onehot")
+        encoding_strategy = "frequency"
         df = encode_categoricals(df, cat_cols, strategy=encoding_strategy)
 
         # scale numerical variables 
