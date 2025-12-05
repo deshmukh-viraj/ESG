@@ -370,11 +370,7 @@ def save_processed(df: pd.DataFrame, output_dir: str, file_name: str = "processe
 
 
 def main(params_path: str = "params.yaml") -> None:
-    """
-    Entrypoint for running preprocessing as a script.
-    Example usage:
-        python -m src.data_preprocessing
-    """
+   
     try:
         params = load_params(params_path)
         input_path = params.get("data_preprocessing", {}).get("input_path", params.get("data_ingestion", {}).get("local_path", "C:\ESG\data\\raw\company_esg_financial_dataset.csv"))
