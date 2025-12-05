@@ -15,13 +15,13 @@ data_ingestion:
 
 
 data_preprocessing:
-  output_dir: C:\ESG\data\interim
+  output_dir: data/interim
   output_file_name: processed_esg_dataset.csv
 
 
 feature_engineering:
   enabled: true
-  input_path:  C:\ESG\data\interim\processed_esg_dataset.csv 
+  input_path:  data/interim/processed_esg_dataset.csv 
   output_dir:  src/features
   output_file_name: featured_esg_dataset.csv
   # toggles
@@ -37,7 +37,7 @@ feature_engineering:
 
 model_building:
   target: "ESG_Overall"
-  input_path: "C:\\ESG\\src\\features\\featured_esg_dataset.csv"
+  input_path: "src/features/featured_esg_dataset.csv"
 
   split:
     test_size: 0.2  
@@ -52,7 +52,7 @@ model_building:
     verbose: 0
 
   output:
-    model_dir: "C:\\ESG\\models"
+    model_dir: "ESG/models"
     model_name: "catboost_final_model.pkl"
     metrics_name: "model_metrics.json"
 
