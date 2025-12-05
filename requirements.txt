@@ -10,3 +10,4 @@ dotenv
 scikit-learn
 mlflow[extras]
 optuna
+catboost
