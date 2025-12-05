@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import json
 import pickle
+import optuna
 import joblib
 from typing import Dict, Any, Optional, Tuple
 
@@ -136,7 +137,7 @@ def main(params_path: str = "params.yaml"):
     n_trials = cfg.get("optuna", {}).get("n_trials", 20)
     timeout = cfg.get("optuna", {}).get("timeout", None)
 
-    output_dir = cfg.get("output", {}).get("model_dir", "C:\\ESG\\models")
+    output_dir = cfg.get("output", {}).get("model_dir", "models")
     model_name = cfg.get("output", {}).get("model_name", "catboost_final_model.pkl")
     metrics_name = cfg.get("output", {}).get("metrics_name", "final_model_metrics.json")
 

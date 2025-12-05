@@ -52,7 +52,7 @@ model_building:
     verbose: 0
 
   output:
-    model_dir: "ESG/models"
+    model_dir: "models"
     model_name: "catboost_final_model.pkl"
     metrics_name: "model_metrics.json"
 
