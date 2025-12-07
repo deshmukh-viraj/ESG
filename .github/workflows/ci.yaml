@@ -7,38 +7,33 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: setup python
+        uses: actions/setup-python@v2
         with:
-          python-version: "3.10"
+          python-version: '3.10'
 
-      - name: Cache Python virtualenv + pip cache
-        id: cache-venv
+      - name: cache pip dependencies
         uses: actions/cache@v3
         with:
-          path: |
-            atlas
-            ~/.cache/pip
-          key: ${{ runner.os }}-venv-${{ hashFiles('requirements.txt') }}
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
+            ${{ runner.os }}-pip-
 
-      - name: Create virtualenv if cache missed
-        if: steps.cache-venv.outputs.cache-hit != 'true'
+      - name: install dependencies
         run: |
-          python -m venv atlas
-          source atlas/bin/activate
-          pip install --upgrade pip
           pip install -r requirements.txt
+      
+      - name: install DVC
+        run: |
           pip install "dvc[all]"
-
-      - name: Run pipeline
+          
+      - name: run pipeline
         env:
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
           DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
         run: |
-          source atlas/bin/activate
           dvc repro
