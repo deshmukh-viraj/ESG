@@ -35,9 +35,10 @@ jobs:
           pip install -r requirements.txt
           pip install "dvc[all]"
 
-      - name: Activate venv and run pipeline
+      - name: Run pipeline
         env:
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
+          DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
         run: |
           source atlas/bin/activate
           dvc repro
