@@ -68,7 +68,7 @@ def evaluate_model(model, X_test, y_test) -> dict:
 
 
 def main():
-    """main evaluation pipeline with MLflow and Dagshub tracking"""
+    """main evaluation pipeline with mlflow and dagshub tracking"""
     
     params = load_params()
 
