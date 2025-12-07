@@ -34,6 +34,6 @@ jobs:
           
       - name: run pipeline
         env:
-          TEST_PROJECT: ${{ secrets.TEST_PROJECT }}
+          DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           dvc repro
