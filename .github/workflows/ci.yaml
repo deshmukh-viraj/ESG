@@ -15,7 +15,7 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: cache pip dependencies
+      - name: Cache pip dependencies
         uses: actions/cache@v3
         with:
           path: ~/.cache/pip
@@ -30,27 +30,10 @@ jobs:
       - name: install DVC
         run: |
           pip install "dvc[all]"
-      
-      - name: Setup DagsHub credentials for DVC
-        run: |
-          dvc remote modify origin --local auth basic
-          dvc remote modify origin --local user ${{ secrets.DAGSHUB_USERNAME }}
-          dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
-      
-      - name: Setup DagsHub authentication
-        run: |
-          mkdir -p ~/.config/dagshub
-          echo "${{ secrets.DAGSHUB_TOKEN }}" > ~/.config/dagshub/token
-          python -c "import dagshub; dagshub.auth.add_app_token(token='${{ secrets.DAGSHUB_TOKEN }}')"
           
       - name: run pipeline
         env:
           DAGSHUB_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
           DAGSHUB_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
-          DAGSHUB_USER_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
-          MLFLOW_TRACKING_URI: https://dagshub.com/${{ secrets.DAGSHUB_USERNAME }}/ESG.mlflow
-          MLFLOW_TRACKING_USERNAME: ${{ secrets.DAGSHUB_USERNAME }}
-          MLFLOW_TRACKING_PASSWORD: ${{ secrets.DAGSHUB_TOKEN }}
-          MLFLOW_TRACKING_TOKEN: ${{ secrets.DAGSHUB_TOKEN }}
         run: |
           dvc repro

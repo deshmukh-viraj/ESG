@@ -79,6 +79,7 @@ def main():
     os.environ["MLFLOW_TRACKING_USERNAME"] = params["dagshub"]["username"]
     os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
 
+    dagshub_url = "https://dagshub.com"
     dagshub.init(
         repo_owner=params["dagshub"]["username"],
         repo_name=params["dagshub"]["repo_name"],
@@ -86,7 +87,7 @@ def main():
     )
 
     mlflow.set_tracking_uri(
-        f"https://dagshub.com/{params['dagshub']['username']}/{params['dagshub']['repo_name']}.mlflow"
+        f"{dagshub_url}/{params['dagshub']['username']}/{params['dagshub']['repo_name']}.mlflow"
     )
     mlflow.set_experiment(params["mlflow"]["experiment_name"])
 

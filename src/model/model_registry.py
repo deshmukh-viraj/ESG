@@ -34,8 +34,10 @@ def setup_dagshub(params: dict, run_id: str):
     """Initialize Dagshub MLflow tracking"""
 
     dags_param = params.get("dagshub", {})
+    dagshub_url = "https://dagshub.com"
     username = dags_param.get("username")
     repo_name = dags_param.get("repo_name")
+    
 
     dagshub_token = os.getenv("DAGSHUB_TOKEN")
     if not dagshub_token:
@@ -45,7 +47,7 @@ def setup_dagshub(params: dict, run_id: str):
     os.environ["MLFLOW_TRACKING_USERNAME"] = username
     os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
     
-    tracking_uri = f'https://dagshub.com/{username}/{repo_name}.mlflow'
+    tracking_uri = f'{dagshub_url}/{username}/{repo_name}.mlflow'
     mlflow.set_tracking_uri(tracking_uri)
 
     client_remote = MlflowClient(tracking_uri=tracking_uri)
