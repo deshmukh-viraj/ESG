@@ -7,6 +7,6 @@ mlflow:
 
 paths:
   model_path: models/catboost_final_model.pkl
-  test_path: data/processed/test_split.csv
+  test_path: models/test_split.csv
   target_col: ESG_Overall
   metrics_output: reports/model_eval_metrics.json
