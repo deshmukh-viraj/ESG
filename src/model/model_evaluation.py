@@ -61,7 +61,7 @@ def evaluate_model(model, X_test, y_test) -> dict:
     
     try:
         y_pred = model.predict(X_test)
-        # Fixed: Use mean_squared_error instead of mean_absolute_error for RMSE
+       
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
         r2 = r2_score(y_test, y_pred)
         metrics = {"RMSE": rmse, "R2": r2}
@@ -105,7 +105,7 @@ def main():
     logging.info(f"MLflow tracking URI set to: {tracking_uri}")
 
     model_path = params["paths"]["model_path"]
-    test_data_path = params["paths"]["test_data"]
+    test_data_path = params["paths"]["test_path"]
     target_col = params["paths"]["target_col"]
 
     df = load_data(test_data_path)
