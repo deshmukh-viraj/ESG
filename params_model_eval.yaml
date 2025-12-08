@@ -6,7 +6,7 @@ mlflow:
   experiment_name: esg-model-evaluation
 
 paths:
-  model_path: C:\ESG\models\catboost_final_model.pkl
-  test_path: C:\ESG\models\test_split.csv
+  model_path: models/catboost_final_model.pkl
+  test_path: data/processed/test_split.csv
   target_col: ESG_Overall
-  metrics_output: C:\\ESG\\reports\\model_eval_metrics.json
+  metrics_output: reports/model_eval_metrics.json
