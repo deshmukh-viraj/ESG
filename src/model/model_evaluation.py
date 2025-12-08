@@ -92,15 +92,13 @@ def main():
     
     logging.info(f"Authenticating with DagsHub as user: {dagshub_username}")
 
-    #initialize DagsHub
-    dagshub.init(
-        repo_owner=params["dagshub"]["username"],
-        repo_name=params["dagshub"]["repo_name"],
-        mlflow=True
-    )
-
+    
     dagshub_url = "https://dagshub.com"
-    tracking_uri = f"{dagshub_url}/{params['dagshub']['username']}/{params['dagshub']['repo_name']}.mlflow"
+    repo_owner = params["dagshub"]["username"]
+    repo_name = params["dagshub"]["repo_name"]
+    
+    tracking_uri = f"{dagshub_url}/{repo_owner}/{repo_name}.mlflow"
+    
     mlflow.set_tracking_uri(tracking_uri)
     mlflow.set_experiment(params["mlflow"]["experiment_name"])
     

@@ -47,7 +47,7 @@ def setup_dagshub(params: dict, run_id: str):
     if not dagshub_token:
         raise EnvironmentError("DAGSHUB_TOKEN environment variable is not set")
     
-    # Use direct MLflow tracking URI instead of dagshub.init()
+    
     os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_username
     os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
     
