@@ -211,7 +211,7 @@ def main():
     try:
         params = load_params("params_model_eval.yaml")
         
-        model_info_path = "C:\\ESG\\reports\\experiment_info.json"
+        model_info_path = "reports/experiment_info.json"
         model_info = load_model_info(model_info_path)
 
         metrics, params_run = setup_dagshub(params, model_info["run_id"])
