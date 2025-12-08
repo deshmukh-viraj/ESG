@@ -4,7 +4,9 @@ import mlflow
 from mlflow.tracking import MlflowClient
 from pathlib import Path
 from mlflow.artifacts import download_artifacts
+from dotenv import load_dotenv
 
+load_dotenv()
 
 try:
     from src.logger import logging
@@ -38,13 +40,15 @@ def setup_dagshub(params: dict, run_id: str):
     username = dags_param.get("username")
     repo_name = dags_param.get("repo_name")
     
+    dagshub_token = os.getenv("DAGSHUB_TOKEN")
+    dagshub_username = os.getenv("DAGSHUB_USERNAME") 
 
     dagshub_token = os.getenv("DAGSHUB_TOKEN")
     if not dagshub_token:
         raise EnvironmentError("DAGSHUB_TOKEN environment variable is not set")
     
     # Use direct MLflow tracking URI instead of dagshub.init()
-    os.environ["MLFLOW_TRACKING_USERNAME"] = username
+    os.environ["MLFLOW_TRACKING_USERNAME"] = dagshub_username
     os.environ["MLFLOW_TRACKING_PASSWORD"] = dagshub_token
     
     tracking_uri = f'{dagshub_url}/{username}/{repo_name}.mlflow'
